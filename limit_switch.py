@@ -1,49 +1,49 @@
-import time
 import RPi.GPIO as GPIO
+import time
+import servo_control
 
-# Set the GPIO mode to BCM
-GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
 
-# Define the GPIO pin for your button
-SWITCH_PIN = 16
+if GPIO.getmode() is None:
+    GPIO.setmode(GPIO.BOARD)
 
-# Define debounce time in milliseconds
-DEBOUNCE_TIME_MS = 200  # 200 milliseconds
+LEFT_LIMIT_SWITCH_PIN = 13
+RIGHT_LIMIT_SWITCH_PIN = 15
 
-# Set the initial state and pull-up resistor for the button
-GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LEFT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(RIGHT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Initialize the button state and previous state
-switch_state = GPIO.input(SWITCH_PIN)
-prev_switch_state = switch_state
+GPIO.setup(29, GPIO.OUT)
+servo = GPIO.PWM(29,50)
 
-# Define a function to handle button presses
-def button_callback(channel):
-    global switch_state
-    switch_state = GPIO.input(SWITCH_PIN)
+def openHatch():
+    try:
+        while GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+            time.sleep(.5)
+            print("Otwieranie klapy...")
+            if GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+                servo_control.moveServo(servo, 6.5, True)
+        while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+            servo_control.moveServo(servo, 0, False)
+            print("Otwarto klapę!")
+            break
+    except KeyboardInterrupt:
+        print("\nExiting the script")
+    finally:
+        servo_control.moveServo(servo, 0, False)
 
-# Add an event listener for the button press
-GPIO.add_event_detect(SWITCH_PIN, GPIO.BOTH, callback=button_callback, bouncetime=DEBOUNCE_TIME_MS)
-
-try:
-    # Main loop
-    while True:
-        time.sleep(.4)
-        # Check if the button state has changed
-        if switch_state != prev_switch_state:
-            if switch_state == GPIO.HIGH:
-                print("The limit switch: TOUCHED -> UNTOUCHED")
-            else:
-                print("The limit switch: UNTOUCHED -> TOUCHED")
-            
-            prev_switch_state = switch_state
-
-
-        if switch_state == GPIO.HIGH:
-            print("The limit switch: UNTOUCHED")
-        else:
-            print("The limit switch: TOUCHED")
-
-except KeyboardInterrupt:
-    # Clean up GPIO on exit
-    GPIO.cleanup()
+def closeHatch():
+    try:
+        while GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+            time.sleep(.5)
+            print("Zamykanie klapy...")
+            if GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+                servo_control.moveServo(servo, 7.5, True)
+        while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+            servo_control.moveServo(servo, 0, False)
+            print("Zamknięto klapę!")
+            break
+    except KeyboardInterrupt:
+        print("\nExiting the script")
+    finally:
+        servo_control.moveServo(servo, 0, False)
