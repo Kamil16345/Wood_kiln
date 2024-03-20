@@ -1,25 +1,43 @@
 import PySimpleGUI as sg
 import RPi.GPIO as GPIO
-# import time
 import limit_switch
 
-layout = [[sg.Text('Zarządzanie suszarnią')],
-          [sg.Button('Uruchom wiatrak')],
+header = [[sg.Text('Zarządzanie suszarnią')]]
+leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Zatrzymaj wiatrak')],
           [sg.Button('Włącz grzałkę')],
           [sg.Button('Wyłącz grzałkę')],
-          [sg.Button('Uchyl klapę')],
-          [sg.Button('Zamknij klapę')],
-          [sg.Button('Rozpocznij suszenie')],
-          [sg.Button('Zakończ')]]
+          [sg.Button('Otwórz klapę')],
+          [sg.Button('Zamknij klapę')]]
 
-window = sg.Window('Suszarnia', layout, size=(600,300))
+middleColumn = [[sg.Text("----------------------------------------------------------------")],
+                [sg.Text("Wilgotność drewna: 100%", k='woodHumidity')],
+                [sg.Text("Temperatura drewna: 100°C", k='woodTemperature')],
+                [sg.Text("Wilgotność powietrza w suszarni: 100%", k='airHumidity')],
+                [sg.Text("Temperatura powietrza w suszarni: 100°C", k='airTemperature')],
+                [sg.Text("Klapa: Otwarta", k='hatchOpened')],
+                [sg.Text("Wiatrak: Włączony", k='fanStatus')],
+                [sg.Text("Drzwi: Otwarte", k='doorStatus')]]
+
+rightColumn = [[sg.Button('Sosna')],
+               [sg.Button('Brzoza')]]
+
+layout = [[sg.Column(header, vertical_alignment='center', justification='center', k='-H-')],
+          [sg.Text("Tryb ręczny:", pad=((7, 0), None), background_color='#ede264', text_color='black'),
+           sg.Text("Aktualne parametry:", pad=((195, 0), None), background_color='#ede264', text_color='black'),
+           sg.Text("Dostępne programy suszenia:", pad=((80, 0), None), background_color='#ede264', text_color='black')],
+          [sg.Column(leftColumn, vertical_alignment='top', pad=(None, None), k='-L-'),
+           sg.Column(middleColumn, vertical_alignment='top', pad=((40, 0), None), k='-M-'),
+           sg.Column(rightColumn, vertical_alignment='top', pad=((20, 0), None), k='-R-')],
+          [sg.Push(), sg.Button('Zakończ',  vertical_alignment='bottom')]]
+
+window = sg.Window('Suszarnia', layout, size=(700,400))
 
 while True:
     event, values = window.Read()
     if event in (None, 'Exit'):
         break
-    if event == 'Uchyl klapę':
+    if event == 'Otwórz klapę':
         print("Otwieranie klapy")
         limit_switch.openHatch()
     if event == 'Zamknij klapę':
@@ -27,35 +45,4 @@ while True:
         limit_switch.closeHatch()
     if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
         break
-# led1=21
-
-# GPIO.setwarnings(False)
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(led1, GPIO.OUT)
-
-# while True:
-#     event, values = window.read()
-#     if event == sg.WIN_CLOSED:
-#         break
-#     if event == 'Uruchom wiatrak':
-#         while True:
-#             GPIO.output(led1, True)
-#             time.sleep(.1)
-#             GPIO.output(led1, False)
-#             time.sleep(.1)
-#     if event == "Zatrzymaj wiatrak":
-#         break
-# window.close()
-
-
-
-# Create the Window
-# window = sg.Window('Window Title', layout)
-
-# Event Loop to process "events" and get the "values" of the inputs
-# while True:
-#     event, values = window.read()
-
-#     print('You entered ', values[0])
-
 window.close()
