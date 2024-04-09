@@ -15,9 +15,9 @@ middleColumn = [[sg.Text("------------------------------------------------------
                 [sg.Text("Temperatura drewna: 100°C", k='woodTemperature')],
                 [sg.Text("Wilgotność powietrza w suszarni: 100%", k='airHumidity')],
                 [sg.Text("Temperatura powietrza w suszarni: 100°C", k='airTemperature')],
-                [sg.Text("Klapa: Otwarta", k='hatchOpened')],
-                [sg.Text("Wiatrak: Włączony", k='fanStatus')],
-                [sg.Text("Drzwi: Otwarte", k='doorStatus')]]
+                [sg.Text("Klapa: Otwarta", k='hatchState')],
+                [sg.Text("Wiatrak: Włączony", k='fanState')],
+                [sg.Text("Drzwi: Otwarte", k='doorState')]]
 
 rightColumn = [[sg.Button('Sosna')],
                [sg.Button('Brzoza')]]
@@ -29,12 +29,15 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
           [sg.Column(leftColumn, vertical_alignment='top', pad=(None, None), k='-L-'),
            sg.Column(middleColumn, vertical_alignment='top', pad=((40, 0), None), k='-M-'),
            sg.Column(rightColumn, vertical_alignment='top', pad=((20, 0), None), k='-R-')],
-          [sg.Push(), sg.Button('Zakończ',  vertical_alignment='bottom')]]
+          [sg.Push(), sg.Button('Zakończ')]]
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
 
 while True:
     event, values = window.Read()
+    hatchState=limit_switch.getHatchState()
+    window['hatchState'].update(hatchState)
+        
     if event in (None, 'Exit'):
         break
     if event == 'Otwórz klapę':

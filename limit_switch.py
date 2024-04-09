@@ -14,7 +14,7 @@ GPIO.setup(LEFT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(RIGHT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 GPIO.setup(29, GPIO.OUT)
-servo = GPIO.PWM(29,50)
+servo = GPIO.PWM(29,5000)
 
 def openHatch():
     try:
@@ -47,3 +47,13 @@ def closeHatch():
         print("\nExiting the script")
     finally:
         servo_control.moveServo(servo, 0, False)
+
+def getHatchState():
+    if GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH & GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+        return "Zamkykanie/otwieranie"
+    elif GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+        return "Otwarta"
+    elif GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
+        return "Zamknięta"
+    else:
+        return "Stan niezdefiniowany"
