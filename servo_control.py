@@ -43,10 +43,11 @@ def moveServo(servo, acceleration, flag):
     if flag == True:
         servo.start(0)
         duty=1
-        # duty = 2
+        duty = 2
+        servo.ChangeDutyCycle(6)
         # while duty <= 3:
         #     print("Moving the servo, duty: ", duty)
-        #     servo.ChangeDutyCycle(acceleration)
+            
         #     duty = duty + 1
     elif flag == False:
         servo.stop()
