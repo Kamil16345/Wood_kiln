@@ -37,7 +37,7 @@ while True:
     event, values = window.Read()
     hatchState=limit_switch.getHatchState()
     window['hatchState'].update(hatchState)
-        
+    
     if event in (None, 'Exit'):
         break
     if event == 'Otwórz klapę':
