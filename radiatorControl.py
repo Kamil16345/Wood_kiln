@@ -3,21 +3,19 @@ import RPi.GPIO as GPIO
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(12, GPIO.OUT) #ENA
-GPIO.setup(16, GPIO.OUT) #IN1
-GPIO.setup(20, GPIO.OUT) #IN2
 
-radiator = GPIO.PWM(12,8000) # Note, 12 is pin, 500 = 500Hz pulse
-radiator.start(0)
-GPIO.output(16, 1)
-GPIO.output(20, 0)
+GPIO.setup(23, GPIO.OUT) #ENB
+GPIO.setup(24, GPIO.OUT) #IN3
+GPIO.setup(25, GPIO.OUT) #IN4
 
+fan = GPIO.PWM(23, 50)
+fan.start(0)
+GPIO.output(24, 1)
+GPIO.output(25, 0)
 try:
     while True:
-        radiator.ChangeDutyCycle(1)
-        # time.sleep(0.5)
-
+        fan.ChangeDutyCycle(100)
+        time.sleep(0.5)
 except:
-    # radiator.stop()
     GPIO.cleanup()
     print("Ending")
