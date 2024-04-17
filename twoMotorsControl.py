@@ -28,11 +28,6 @@ GPIO.setup(left_rotate_dc_motor, GPIO.OUT)
 GPIO.setup(power_on_dc_motors, GPIO.OUT)
 GPIO.setup(power_on_fan, GPIO.OUT)
 
-# GPIO.output(right_rotate_dc_motor, False)
-# GPIO.output(left_rotate_dc_motor, False)
-# GPIO.output(power_on_dc_motors, False)
-# GPIO.output(power_on_fan, False)
-
 def openControllerOutput():
     try:
         if GPIO.getmode() is None:
@@ -45,11 +40,6 @@ def openControllerOutput():
     except:
         GPIO.cleanup()
         print("Ending")
-
-# def helloWorld():
-#     print("Hello world")
-#     print("2")
-#     time.sleep(.5)
         
 def openHatch():
     try:
@@ -81,7 +71,6 @@ def startTheFan():
     try:
         while True:
             openControllerOutput()
-            # if GPIO.output(right_rotate_dc_motor, False) or GPIO.output(left_rotate_dc_motor, False):
             GPIO.output(power_on_dc_motors, False)
             GPIO.output(power_on_fan, False)
             time.sleep(1)
