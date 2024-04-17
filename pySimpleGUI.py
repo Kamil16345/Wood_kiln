@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 import RPi.GPIO as GPIO
-import limit_switch
+import suszarnia.Wood_kiln.Wood_kiln.limit_switch as limit_switch
 
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
