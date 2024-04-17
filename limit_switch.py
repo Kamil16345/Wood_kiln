@@ -1,6 +1,7 @@
 from gpiozero import Servo
 import RPi.GPIO as GPIO
 import time
+import twoMotorsControl
     
 if GPIO.getmode() is None:
     GPIO.setmode(GPIO.BCM)
@@ -12,49 +13,36 @@ GPIO.setup(LEFT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(RIGHT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def openHatch():
-    GPIO.setmode(GPIO.BCM)
-    servo_speed = 0
-    servo = Servo(5)
-    servo.value=servo_speed
     try:
+        # if GPIO.getmode() is None:
+        #     GPIO.setmode(GPIO.BCM)
         while GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            print("Otwieranie klapy...")
+            print("Otwieranie wyłazu...")
             if GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-                time.sleep(0.5)
-                if servo_speed < 0.9:
-                    servo_speed+=0.1
-                    servo.value = servo_speed
+                twoMotorsControl.openHatch()
         while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            servo.value=0
             print("Otwarto klapę!")
             break
     except KeyboardInterrupt:
         print("\nExiting the script")
     finally:
-        servo.value=0
         GPIO.cleanup()
 
 def closeHatch():
-    GPIO.setmode(GPIO.BCM)
-    servo_speed = 0
-    servo = Servo(5)
-    servo.value=servo_speed
+    
     try:
+        # if GPIO.getmode() is None:
+        #     GPIO.setmode(GPIO.BCM)
         while GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
             print("Zamykanie klapy...")
             if GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-                time.sleep(0.5)
-                if servo_speed > -0.9:
-                    servo_speed -= 0.1
-                    servo.value = servo_speed
+                twoMotorsControl.closeHatch()
         while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            servo.value=0
             print("Zamknięto klapę!")
             break
     except KeyboardInterrupt:
         print("\nExiting the script")
     finally:
-        servo.value=0
         GPIO.cleanup()
 
 def getHatchState():

@@ -38,9 +38,9 @@ def openControllerOutput():
         if GPIO.getmode() is None:
             GPIO.setmode(GPIO.BCM)
         # while True:
-        motors.ChangeDutyCycle(10) #It set 6V on OUT1 of controller
+        motors.ChangeDutyCycle(20) #It set 6V on OUT1 of controller
         # motors.ChangeDutyCycle(8000) #It set 6V on OUT1 of controller
-        GPIO.output(power_on_dc_motors, False)
+        # GPIO.output(power_on_dc_motors, False)
         time.sleep(.5)
     except:
         GPIO.cleanup()
@@ -55,26 +55,26 @@ def openHatch():
     try:
         while True:
             openControllerOutput()
-            if GPIO.output(left_rotate_dc_motor, False):
-                GPIO.output(left_rotate_dc_motor, True)
-            GPIO.output(right_rotate_dc_motor, True)
+            GPIO.output(power_on_dc_motors, False)
+            GPIO.output(left_rotate_dc_motor, False)
             time.sleep(1)
     except Exception as e:
         print("Error occurred: ", e)
     finally:
+        closeAllRelays()
         GPIO.cleanup()
         
 def closeHatch():
     try:
         while True:
             openControllerOutput()
-            if GPIO.output(right_rotate_dc_motor, False):
-                GPIO.output(right_rotate_dc_motor, True)
-            GPIO.output(left_rotate_dc_motor, True)
+            GPIO.output(power_on_dc_motors, False)
+            GPIO.output(right_rotate_dc_motor, False)
             time.sleep(1)
     except Exception as e:
         print("Error occurred: ", e)
     finally:
+        closeAllRelays()
         GPIO.cleanup()
 
 def startTheFan():
@@ -82,22 +82,22 @@ def startTheFan():
         while True:
             openControllerOutput()
             # if GPIO.output(right_rotate_dc_motor, False) or GPIO.output(left_rotate_dc_motor, False):
-            GPIO.output(right_rotate_dc_motor, True)
-            GPIO.output(left_rotate_dc_motor, True)
+            GPIO.output(power_on_dc_motors, False)
             GPIO.output(power_on_fan, False)
             time.sleep(1)
     except Exception as e:
         print("Error occurred: ", e)
     finally:
+        closeAllRelays()
         GPIO.cleanup()
 
+def closeAllRelays():
+    print("a")
+    GPIO.output(left_rotate_dc_motor, True)
+    GPIO.output(right_rotate_dc_motor, True)
+    GPIO.output(power_on_dc_motors, True)
+    GPIO.output(power_on_fan, True)
+    
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "startTheFan":
         startTheFan()
-# try:
-#     while True:
-#         openControllerOutput()
-#         openHatch()
-# except:
-#     GPIO.cleanup()
-#     print("Ending")

@@ -1,14 +1,16 @@
 import PySimpleGUI as sg
 import RPi.GPIO as GPIO
-import suszarnia.Wood_kiln.Wood_kiln.limit_switch as limit_switch
-
+#import suszarnia.Wood_kiln.Wood_kiln.limit_switch as limit_switch
+import limit_switch
+import radiatorControl
+import twoMotorsControl
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Zatrzymaj wiatrak')],
           [sg.Button('Włącz grzałkę')],
           [sg.Button('Wyłącz grzałkę')],
-          [sg.Button('Otwórz klapę')],
-          [sg.Button('Zamknij klapę')]]
+          [sg.Button('Otwórz wyłaz')],
+          [sg.Button('Zamknij wyłaz')]]
 
 middleColumn = [[sg.Text("----------------------------------------------------------------")],
                 [sg.Text("Wilgotność drewna: 100%", k='woodHumidity')],
@@ -33,19 +35,32 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
 
-while True:
-    event, values = window.Read()
-    hatchState=limit_switch.getHatchState()
-    window['hatchState'].update(hatchState)
+#while True:
+event, values = window.Read()
+hatchState=limit_switch.getHatchState()
+window['hatchState'].update(hatchState)
+if event == 'Uruchom wiatrak':
+    print("Uruchomiono wiatrak")
+    twoMotorsControl.startTheFan()
+if event == 'Zatrzymaj wiatrak':
+    print("Zatrzymano wiatrak")
+    # radiatorControl.stopRadiator() 
+if event == 'Włącz grzałkę':
+    print("Włączono grzałkę")
+    radiatorControl.runRadiator()
+if event == 'Wyłącz grzałkę':
+    print("Wyłączono grzałkę")
+    radiatorControl.stopRadiator()
+if event == 'Otwórz wyłaz':
+    print("Otwieranie klapy")
+    limit_switch.openHatch()
+if event == 'Zamknij wyłaz':
+    print("Zamykanie klapy")
+    limit_switch.closeHatch()
+# if event in (None, 'Exit'):
+    # break
     
-    if event in (None, 'Exit'):
-        break
-    if event == 'Otwórz klapę':
-        print("Otwieranie klapy")
-        limit_switch.openHatch()
-    if event == 'Zamknij klapę':
-        print("Zamykanie klapy")
-        limit_switch.closeHatch()
-    if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
-        break
-window.close()
+# if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
+#     # break
+#     window.close()
+

@@ -12,10 +12,23 @@ fan = GPIO.PWM(23, 50)
 fan.start(0)
 GPIO.output(24, 1)
 GPIO.output(25, 0)
-try:
-    while True:
-        fan.ChangeDutyCycle(100)
-        time.sleep(0.5)
-except:
-    GPIO.cleanup()
-    print("Ending")
+
+def runRadiator():    
+    try:
+        while True:
+            fan.ChangeDutyCycle(100)
+            time.sleep(0.5)
+    except Exception as e:
+        print("Error occurred: ", e)
+    finally:
+        GPIO.cleanup()
+        
+def stopRadiator():    
+    try:
+        while True:
+            fan.ChangeDutyCycle(0)
+            time.sleep(0.5)
+    except Exception as e:
+        print("Error occurred: ", e)
+    finally:
+        GPIO.cleanup()
