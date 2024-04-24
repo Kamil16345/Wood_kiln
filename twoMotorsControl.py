@@ -33,7 +33,7 @@ def openControllerOutput():
         if GPIO.getmode() is None:
             GPIO.setmode(GPIO.BCM)
         # while True:
-        motors.ChangeDutyCycle(20) #It set 6V on OUT1 of controller
+        motors.ChangeDutyCycle(5) #It set 6V on OUT1 of controller
         # motors.ChangeDutyCycle(8000) #It set 6V on OUT1 of controller
         # GPIO.output(power_on_dc_motors, False)
         time.sleep(.5)
@@ -88,5 +88,9 @@ def closeAllRelays():
     GPIO.output(power_on_fan, True)
     
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "closeHatch":
+        closeHatch()
+    if len(sys.argv) > 1 and sys.argv[1] == "openHatch":
+        openHatch()
     if len(sys.argv) > 1 and sys.argv[1] == "startTheFan":
         startTheFan()
