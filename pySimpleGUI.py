@@ -1,9 +1,11 @@
 import PySimpleGUI as sg
 import RPi.GPIO as GPIO
-#import suszarnia.Wood_kiln.Wood_kiln.limit_switch as limit_switch
+import twoMotorsControl
 import limit_switch
 import radiatorControl
 import twoMotorsControl
+
+twoMotorsControl.closeAllRelays()
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Zatrzymaj wiatrak')],
