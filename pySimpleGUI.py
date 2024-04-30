@@ -1,9 +1,11 @@
+import threading
 import PySimpleGUI as sg
 import RPi.GPIO as GPIO
+import time
 import twoMotorsControl
-import limit_switch
 import radiatorControl
 import twoMotorsControl
+import stemma_sensor
 
 twoMotorsControl.TwoMotorsControl.closeAllRelays()
 header = [[sg.Text('Zarządzanie suszarnią')]]
@@ -13,15 +15,16 @@ leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Wyłącz grzałkę')],
           [sg.Button('Otwórz wyłaz')],
           [sg.Button('Zamknij wyłaz')]]
-
+# while True:
 middleColumn = [[sg.Text("----------------------------------------------------------------")],
-                [sg.Text("Wilgotność drewna: 100%", k='woodHumidity')],
-                [sg.Text("Temperatura drewna: 100°C", k='woodTemperature')],
+                [sg.Text("Wilgotność drewna: " + stemma_sensor.measureHumidity(), k='woodHumidity')],
+                [sg.Text("Temperatura drewna: " + stemma_sensor.measureTemperature() + "°C", k='woodTemperature')],
                 [sg.Text("Wilgotność powietrza w suszarni: 100%", k='airHumidity')],
                 [sg.Text("Temperatura powietrza w suszarni: 100°C", k='airTemperature')],
                 [sg.Text("Klapa: Otwarta", k='hatchState')],
                 [sg.Text("Wiatrak: Włączony", k='fanState')],
                 [sg.Text("Drzwi: Otwarte", k='doorState')]]
+    # time.sleep(1)
 
 rightColumn = [[sg.Button('Sosna')],
                [sg.Button('Brzoza')]]
@@ -36,9 +39,17 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
           [sg.Push(), sg.Button('Zakończ')]]
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
-
+boolVal=1
+event, values = window.Read()
+# while boolVal == 1:
+#     print("1")
+#     window['woodHumidity'].Update("Wilgotność drewna: " + stemma_sensor.measureHumidity())
+#     time.sleep(1)
+    
 while True:
+    print("111")
     event, values = window.Read()
+    window.refresh()
     # hatchState=limit_switch.getHatchState()
     # window['hatchState'].update(hatchState)
     if event == 'Uruchom wiatrak':
@@ -56,14 +67,22 @@ while True:
         print("Wyłączono grzałkę")
         radiatorControl.stopRadiator()
     if event == 'Otwórz wyłaz':
+        hatch = twoMotorsControl.TwoMotorsControl(20)
+        hatch.openHatch()
         print("Otwieranie klapy")
-        limit_switch.openHatch()
+        # limit_switch.openHatch()
     if event == 'Zamknij wyłaz':
+        hatch = twoMotorsControl.TwoMotorsControl(30)
+        hatch.closeHatch()
         print("Zamykanie klapy")
-        limit_switch.closeHatch()
+        # limit_switch.closeHatch()
     if event in (None, 'Exit'):
+        GPIO.cleanup()
         break
     if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
         # break
+        GPIO.cleanup()
         window.close()
+    time.sleep(1)
+    
 
