@@ -47,8 +47,6 @@ class TwoMotorsControl:
         GPIO.output(right_rotate_dc_motor, True)
         GPIO.output(power_on_dc_motors, True)
         GPIO.output(power_on_fan, True)
-    
-    # def openControllerOutput():
                     
     def openHatch(self):
         try:
@@ -61,7 +59,6 @@ class TwoMotorsControl:
             print("Error occurred: ", e)
         finally:
             TwoMotorsControl.closeAllRelays()
-            # GPIO.cleanup()
             
     def closeHatch(self):
         try:
@@ -74,35 +71,22 @@ class TwoMotorsControl:
             print("Error occurred: ", e)
         finally:
             TwoMotorsControl.closeAllRelays()
-            # GPIO.cleanup()
 
     def startTheFan(self):
         try:
-            GPIO.setmode(GPIO.BCM)
-            while True:
-                motors.ChangeDutyCycle(self.pwm)
-                GPIO.output(power_on_dc_motors, False)
-                GPIO.output(power_on_fan, False)
-                time.sleep(1)
+            motors.ChangeDutyCycle(5)
+            GPIO.output(power_on_dc_motors, False)
+            GPIO.output(power_on_fan, False)
         except Exception as e:
             print("Error occurred: ", e)
-        finally:
-            TwoMotorsControl.closeAllRelays()
-            # GPIO.cleanup()
             
     def stopTheFan(self):
         try:
-            GPIO.setmode(GPIO.BCM)
-            # while True:
             motors.ChangeDutyCycle(self.pwm)
             GPIO.output(power_on_dc_motors, True)
             GPIO.output(power_on_fan, True)
-            time.sleep(1)
         except Exception as e:
             print("Error occurred: ", e)
-        finally:
-            TwoMotorsControl.closeAllRelays()
-            # GPIO.cleanup()
 
     if __name__ == "__main__":
         if len(sys.argv) > 1 and sys.argv[1] == "closeHatch":

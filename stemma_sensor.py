@@ -10,14 +10,14 @@ ss = Seesaw(i2c_bus, addr=0x36)
 counter = 0
 humidityAccumulated=0
 def measureHumidity():
-    while True:
-        touch = ss.moisture_read()
-        return str(touch)
+    # while True:
+    touch = ss.moisture_read()
+    return touch
     
 def measureTemperature():
-    while True:
-        temp = ss.get_temp()
-        return str(round(temp,1))
+    # while True:
+    temp = ss.get_temp()
+    return round(temp,1)
     
 def other():
     while True:

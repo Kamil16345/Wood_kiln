@@ -1,4 +1,3 @@
-from gpiozero import Servo
 import RPi.GPIO as GPIO
 import time
 import twoMotorsControl
@@ -14,14 +13,12 @@ GPIO.setup(RIGHT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def openHatch():
     try:
-        # if GPIO.getmode() is None:
-        #     GPIO.setmode(GPIO.BCM)
         while GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
             print("Otwieranie wyłazu...")
             if GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
                 twoMotorsControl.openHatch()
         while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            print("Otwarto klapę!")
+            print("Otwarto wyłaz!")
             break
     except KeyboardInterrupt:
         print("\nExiting the script")
@@ -29,16 +26,13 @@ def openHatch():
         GPIO.cleanup()
 
 def closeHatch():
-    
     try:
-        # if GPIO.getmode() is None:
-        #     GPIO.setmode(GPIO.BCM)
         while GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            print("Zamykanie klapy...")
+            print("Zamykanie wyłazu...")
             if GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
                 twoMotorsControl.closeHatch()
         while not GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-            print("Zamknięto klapę!")
+            print("Zamknięto wyłaz!")
             break
     except KeyboardInterrupt:
         print("\nExiting the script")
@@ -49,8 +43,8 @@ def getHatchState():
     if GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH & GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
         return "Zamkykanie/otwieranie"
     elif GPIO.input(LEFT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-        return "Otwarta"
+        return "Otwarty"
     elif GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
-        return "Zamknięta"
+        return "Zamknięty"
     else:
         return "Stan niezdefiniowany"

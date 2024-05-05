@@ -1,27 +1,31 @@
 import twoMotorsControl
 import radiatorControl
 import sys
-import dht11
+import DHT11_sensor
+import time
 
-fan = twoMotorsControl.TwoMotorsControl(10)
+fan = twoMotorsControl.TwoMotorsControl(20)
 openHatch = twoMotorsControl.TwoMotorsControl(20)
 closeHatch = twoMotorsControl.TwoMotorsControl(30)
 
 def startDrying():
-    temp = dht11.getMockupTemperature()
     while True:
+        temp = DHT11_sensor.getMockupTemperature()
         print("Temperatura: " + str(temp))
-        if  temp >= 30:
+        if temp is not None and temp >= 27:
             print("Wietrzenie suszarni")
             radiatorControl.stopRadiator()
             openHatch.openHatch()
             fan.startTheFan()
-        if temp < 30:
+        if temp is not None and temp < 27:
             print("Nagrzewanie suszarni")
             fan.stopTheFan()
-            radiatorControl.runRadiator()
             closeHatch.closeHatch()
-
+            radiatorControl.runRadiator()
+        if temp == None:
+            print("Błąd pomiaru, kontunuowanie algorytmu suszenia.")
+            continue
+        time.sleep(15)
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "startDrying":
         startDrying()

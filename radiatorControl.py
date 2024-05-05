@@ -19,30 +19,18 @@ GPIO.setup(door_limit_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def runRadiator():
     try:
-        # GPIO.setmode(GPIO.BCM)
         if GPIO.input(door_limit_switch) == GPIO.LOW:
-        # while True:
             fan.ChangeDutyCycle(100)
-            # time.sleep(0.5)
-            # print("Radiator working")
         if GPIO.input(door_limit_switch) == GPIO.HIGH:
             print("Drzwi są otwarte. Zamknij drzwi!")
     except Exception as e:
         print("Error occurred: ", e)
-    finally:
-        # GPIO.cleanup()
-        print("")
         
-def stopRadiator():   
+def stopRadiator():
     try:
-        # while True:
         fan.ChangeDutyCycle(0)
-            # time.sleep(0.5)
     except Exception as e:
         print("Error occurred: ", e)
-    finally:
-        print("")
-        # GPIO.cleanup()
         
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "runRadiator":
