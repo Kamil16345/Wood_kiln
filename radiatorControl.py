@@ -9,8 +9,8 @@ GPIO.setup(23, GPIO.OUT) #ENB
 GPIO.setup(24, GPIO.OUT) #IN3
 GPIO.setup(25, GPIO.OUT) #IN4
 
-fan = GPIO.PWM(23, 50)
-fan.start(0)
+radiator = GPIO.PWM(23, 50)
+radiator.start(0)
 GPIO.output(24, 1)
 GPIO.output(25, 0)
 
@@ -20,7 +20,7 @@ GPIO.setup(door_limit_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 def runRadiator():
     try:
         if GPIO.input(door_limit_switch) == GPIO.LOW:
-            fan.ChangeDutyCycle(100)
+            radiator.ChangeDutyCycle(100)
         if GPIO.input(door_limit_switch) == GPIO.HIGH:
             print("Drzwi są otwarte. Zamknij drzwi!")
     except Exception as e:
@@ -28,7 +28,7 @@ def runRadiator():
         
 def stopRadiator():
     try:
-        fan.ChangeDutyCycle(0)
+        radiator.ChangeDutyCycle(0)
     except Exception as e:
         print("Error occurred: ", e)
         

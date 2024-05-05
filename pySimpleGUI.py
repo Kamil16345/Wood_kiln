@@ -24,6 +24,7 @@ middleColumn = [[sg.Text("------------------------------------------------------
                 [sg.Text("Temperatura powietrza w suszarni: " + str(DHT11_sensor.getMockupTemperature()) + "°C", k='airTemperature')],
                 [sg.Text("Wyłaz dachowy: " + limit_switch.getHatchState(), k='hatchState')],
                 [sg.Text("Wiatrak: " , k='fanState')],
+                [sg.Text("Grzałka: Wyłączona" , k='fanState')],
                 [sg.Text("Drzwi: Otwarte", k='doorState')]]
 
 rightColumn = [[sg.Button('Sosna')],

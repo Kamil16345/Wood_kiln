@@ -1,6 +1,7 @@
 import time
 from board import SCL, SDA
 import busio
+import sys
 
 from adafruit_seesaw.seesaw import Seesaw
 i2c_bus=busio.I2C(SCL, SDA)
@@ -12,6 +13,7 @@ humidityAccumulated=0
 def measureHumidity():
     # while True:
     touch = ss.moisture_read()
+    print("wilgotnosc_drewna: " + str(touch))
     return touch
     
 def measureTemperature():
@@ -35,3 +37,7 @@ def other():
             
         file1 = open("MyFile.txt", "w")
         time.sleep(1)
+        
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "measureHumidity":
+        measureHumidity()
