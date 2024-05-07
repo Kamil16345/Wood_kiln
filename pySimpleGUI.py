@@ -6,6 +6,7 @@ import twoMotorsControl
 import stemma_sensor
 import DHT11_sensor
 import limit_switch
+import simpleAlgorithm
 
 twoMotorsControl.TwoMotorsControl.closeAllRelays()
 
@@ -46,45 +47,48 @@ window = sg.Window('Suszarnia', layout, size=(700,400))
 #     print("1")
 #     window['woodHumidity'].Update("Wilgotność drewna: " + stemma_sensor.measureHumidity())
 #     time.sleep(1)
-    
+event, values = window.Read()
 while True:
     print("111")
-    event, values = window.Read()
+    
     window.refresh()
     # hatchState=limit_switch.getHatchState()
     # window['hatchState'].update(hatchState)
-    if event == 'Uruchom wiatrak':
-        fan = twoMotorsControl.TwoMotorsControl(4)
-        fan.startTheFan()
-        print("Uruchomiono wiatrak")
-    if event == 'Zatrzymaj wiatrak':
-        fan = twoMotorsControl.TwoMotorsControl(0)
-        fan.stopTheFan()
-        print("Zatrzymano wiatrak")
-    if event == 'Włącz grzałkę':
-        print("Włączono grzałkę")
-        radiatorControl.runRadiator()
-    if event == 'Wyłącz grzałkę':
-        print("Wyłączono grzałkę")
-        radiatorControl.stopRadiator()
-    if event == 'Otwórz wyłaz':
-        hatch = twoMotorsControl.TwoMotorsControl(20)
-        hatch.openHatch()
-        print("Otwieranie klapy")
-    if event == 'Zamknij wyłaz':
-        hatch = twoMotorsControl.TwoMotorsControl(30)
-        hatch.closeHatch()
-        print("Zamykanie klapy")
-    if event in (None, 'Exit'):
-        print("None, exit")
-        # twoMotorsControl.TwoMotorsControl.closeAllRelays()
-        GPIO.cleanup()
-        break
-    if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
-        print("Zakoncz")
-        twoMotorsControl.TwoMotorsControl.closeAllRelays()
-        GPIO.cleanup()
-        window.close()
+    # if event == 'Uruchom wiatrak':
+    #     fan = twoMotorsControl.TwoMotorsControl(4)
+    #     fan.startTheFan()
+    #     print("Uruchomiono wiatrak")
+    # if event == 'Zatrzymaj wiatrak':
+    #     fan = twoMotorsControl.TwoMotorsControl(0)
+    #     fan.stopTheFan()
+    #     print("Zatrzymano wiatrak")
+    # if event == 'Włącz grzałkę':
+    #     print("Włączono grzałkę")
+    #     radiatorControl.runRadiator()
+    # if event == 'Wyłącz grzałkę':
+    #     print("Wyłączono grzałkę")
+    #     radiatorControl.stopRadiator()
+    # if event == 'Otwórz wyłaz':
+    #     hatch = twoMotorsControl.TwoMotorsControl(20)
+    #     hatch.openHatch()
+    #     print("Otwieranie klapy")
+    # if event == 'Zamknij wyłaz':
+    #     hatch = twoMotorsControl.TwoMotorsControl(30)
+    #     hatch.closeHatch()
+    #     print("Zamykanie klapy")
+    # if event == 'Sosna':
+    #     simpleAlgorithm.startDrying(10)
+    #     print("Uruchomiono tryb automatyczny")
+    # if event in (None, 'Exit'):
+    #     print("None, exit")
+    #     # twoMotorsControl.TwoMotorsControl.closeAllRelays()
+    #     GPIO.cleanup()
+    #     break
+    # if event == sg.WIN_CLOSED or event == 'Zakończ': # if user closes window or clicks cancel
+    #     print("Zakoncz")
+    #     twoMotorsControl.TwoMotorsControl.closeAllRelays()
+    #     GPIO.cleanup()
+    #     window.close()
     time.sleep(.5)
     
 
