@@ -1,77 +1,87 @@
 import twoMotorsControl
 import radiatorControl
 import sys
-import DHT11_sensor
+import DHT11Sensor
 import time
-import stemma_sensor
+import stemmaSensor
+import kilnAWSConnector
+import datetime
 
 fan = twoMotorsControl.TwoMotorsControl(20)
 openHatch = twoMotorsControl.TwoMotorsControl(20)
 closeHatch = twoMotorsControl.TwoMotorsControl(30)
 
 def startDrying(dryingTarget):
-    air_temperature = DHT11_sensor.getMockupTemperature()
-    air_humidity = DHT11_sensor.getMockupHumidity()
+    airTemperature = DHT11Sensor.getMockupTemperature()
+    airHumidity = DHT11Sensor.getMockupHumidity()
     
-    wood_temperature = stemma_sensor.measureTemperature()
-    wood_humidity = stemma_sensor.measureHumidity()
+    woodTemperature = stemmaSensor.measureTemperature()
+    woodHumidity = stemmaSensor.measureHumidity()
     
-    if wood_humidity > dryingTarget:
-        print("Temperatura powietrza: " + str(air_temperature) + "°C")
-        print("Wilgotność powietrza: " + str(air_humidity) + "%")
+    if woodHumidity > dryingTarget:
+        print("Temperatura powietrza: " + str(airTemperature) + "°C")
+        print("Wilgotność powietrza: " + str(airHumidity) + "%")
         
-        print("Temperatura drewna: " + str(wood_temperature) + "°C")
-        print("Wilgotność drewna: " + str(wood_humidity) + "%")
+        print("Temperatura drewna: " + str(woodTemperature) + "°C")
+        print("Wilgotność drewna: " + str(round(woodHumidity, 2)) + "%")
         print("-----------------------------------------")
         
-        if wood_temperature is not None and wood_temperature >= 35:
+        dateString = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+        
+        data = {
+            "woodHumidity": woodHumidity,
+            "woodTemperature": woodTemperature,
+            "airHumidity": airHumidity,
+            "airTemperature": airTemperature,
+            "timestamp": dateString
+        }
+        
+        kilnAWSConnector.publishWoodData(data)
+        
+        if woodTemperature is not None and woodTemperature >= 35:
             print("Temperatura drewna >= 35 °C. Grzałki wyłączone.")
             radiatorControl.stopRadiator()
-            checkAirHumidity(air_humidity)
+            checkAirHumidity(airHumidity)
             print("-----------------")
-        elif wood_temperature is not None and wood_temperature < 34:
-            print("Temperatura drewna < 34 °C. Grzałki włączone.")
+        elif woodTemperature is not None and woodTemperature < 34:
+            print("Temperatura drewna < 34 °C.")
             radiatorControl.runRadiator()
-            checkAirHumidity(air_humidity)
+            checkAirHumidity(airHumidity)
             print("-----------------")
-        elif wood_temperature == None:
+        elif woodTemperature == None or woodTemperature == None:
             print("Błąd podczas odczytu temperatury drewna. Kontynuowanie algorytmu suszenia.")
         startDrying(dryingTarget)
-    else:
-        print("Osiągnięto cel suszenia: " + dryingTarget + "\n Koniec programu.")
+    elif woodHumidity <= dryingTarget:
+        print("Osiągnięto cel suszenia: " + str(dryingTarget) + "\n Koniec programu.")
         return
         
-def checkAirHumidity(air_humidity):
-    if air_humidity is not None and air_humidity >= 75 and air_humidity < 100:
+def checkAirHumidity(airHumidity):
+    if airHumidity is not None and airHumidity >= 75 and airHumidity < 100:
         print("Osiągnięto wilgotność powietrza >= 75%. Wietrzenie makiety.")
         radiatorControl.stopRadiator()
         openHatch.openHatch()
         fan.startTheFan()
-    elif air_humidity is not None and air_humidity < 50:
+    elif airHumidity is not None and airHumidity < 50:
         print("Osiągnięto wilgotność powietrza < 50%. Koniec wietrzenia.")
-        radiatorControl.stopRadiator()
+        radiatorControl.runRadiator()
         openHatch.closeHatch()
         fan.stopTheFan()
-    elif air_humidity == None:
+    elif airHumidity == None:
         print("Błąd podczas odczytu wilgotności powietrza. Kontynuowanie algorytmu suszenia.")
-        
-        
         
 def startWarming():
     while True:
-        temp = DHT11_sensor.getMockupTemperature()
-        humidity = DHT11_sensor.getMockupHumidity()
-        print("Temperatura powietrza: " + str(temp))
+        temperature = DHT11Sensor.getMockupTemperature()
+        humidity = DHT11Sensor.getMockupHumidity()
+        print("Temperatura powietrza: " + str(temperature))
         print("Wilgotność powietrza: " + str(humidity))
         radiatorControl.runRadiator()
         time.sleep(3)
 
-
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "startDrying":
-        startDrying(10)    
+        startDrying(1)    
     if len(sys.argv) > 1 and sys.argv[1] == "startWarming":
         startWarming()
-        
         
 # 700 - drewno wysuszone

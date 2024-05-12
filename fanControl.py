@@ -16,6 +16,6 @@ try:
     while True:
         fan.ChangeDutyCycle(100)
         time.sleep(0.5)
-except:
+except Exception as e:
     GPIO.cleanup()
-    print("Ending")
+    print("Wystąpił błąd w module fanControl.py: ", e)

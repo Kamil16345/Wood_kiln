@@ -35,9 +35,9 @@ class TwoMotorsControl:
     try:
         if GPIO.getmode() is None:
             GPIO.setmode(GPIO.BCM)
-    except:
-        # GPIO.cleanup()
-        print("Ending")
+    except Exception as e:
+        GPIO.cleanup()
+        print("Wystąpił błąd podczas ustawiania GPIO: ", e)
             
     def __init__(self, pwm):
         self.pwm=pwm
@@ -54,9 +54,9 @@ class TwoMotorsControl:
             while GPIO.input(RIGHT_LIMIT_SWITCH_PIN) == GPIO.HIGH:
                 GPIO.output(power_on_dc_motors, False)
                 GPIO.output(left_rotate_dc_motor, False)
-                time.sleep(1)
+                time.sleep(.5)
         except Exception as e:
-            print("Error occurred: ", e)
+            print("Wystąpił błąd podczas otwierania wywietrznika dachowego: ", e)
         finally:
             TwoMotorsControl.closeAllRelays()
             
@@ -68,7 +68,7 @@ class TwoMotorsControl:
                 GPIO.output(right_rotate_dc_motor, False)
                 time.sleep(1)
         except Exception as e:
-            print("Error occurred: ", e)
+            print("Wystąpił błąd podczas zamykania wywietrznika dachowego: ", e)
         finally:
             TwoMotorsControl.closeAllRelays()
 
@@ -78,7 +78,7 @@ class TwoMotorsControl:
             GPIO.output(power_on_dc_motors, False)
             GPIO.output(power_on_fan, False)
         except Exception as e:
-            print("Error occurred: ", e)
+            print("Wystąpił błąd podczas uruchamiania wiatraka: ", e)
             
     def stopTheFan(self):
         try:
@@ -86,7 +86,7 @@ class TwoMotorsControl:
             GPIO.output(power_on_dc_motors, True)
             GPIO.output(power_on_fan, True)
         except Exception as e:
-            print("Error occurred: ", e)
+            print("Wystąpił błąd podczas zatrzymywania wiatraka: ", e)
 
     if __name__ == "__main__":
         if len(sys.argv) > 1 and sys.argv[1] == "closeHatch":

@@ -9,13 +9,17 @@ sensor = Adafruit_DHT.DHT11
 pin = 21
 
 def getMockupTemperature():
-    _, temperature = Adafruit_DHT.read_retry(sensor, pin, 2)
-    # print("Temperatura powietrza w suszarni: " + str(temperature))
+    try:
+        _, temperature = Adafruit_DHT.read_retry(sensor, pin, 2)
+    except Exception as e:
+        print("Błąd podczas odczytu temperatury powietrza w makiecie: ", e)
     return temperature
 
 def getMockupHumidity():
-    humidity, _ = Adafruit_DHT.read_retry(sensor, pin, 2)
-    # print("Wilgotność powietrza w suszarni: " + str(humidity))
+    try:
+        humidity, _ = Adafruit_DHT.read_retry(sensor, pin, 2)
+    except Exception as e:
+        print("Błąd podczas odczytu wilgotności powietrza w makiecie: ", e)
     return humidity
 
 if __name__ == "__main__":

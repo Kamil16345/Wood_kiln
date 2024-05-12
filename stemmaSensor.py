@@ -3,7 +3,7 @@ from board import SCL, SDA
 import busio
 import sys
 from adafruit_seesaw.seesaw import Seesaw
-MSG=""
+
 i2c_bus=busio.I2C(SCL, SDA)
 
 ss = Seesaw(i2c_bus, addr=0x36)
@@ -18,14 +18,13 @@ def measureHumidity():
     
 def measureTemperature():
     temp = ss.get_temp()
-    # print("Temperatura drewna: " + str(temp))
-    return round(temp,1)
+    return round(temp,2)
     
 def other():
     while True:
         touch = ss.moisture_read()
         temp = ss.get_temp()
-        print("temp: " + str(temp) + " moisture: " + str(touch))
+        print("Temperatura drewna: " + str(temp) + ", wilgotność drewna: " + str(touch))
         humidityAccumulated = humidityAccumulated + touch
         counter=counter + 1
         
