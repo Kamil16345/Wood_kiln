@@ -1,4 +1,4 @@
-import twoMotorsControl
+from twoMotorsControl import TwoMotorsControl
 import radiatorControl
 import sys
 import DHT11Sensor
@@ -7,15 +7,17 @@ import stemmaSensor
 import kilnAWSConnector
 from datetime import datetime
 
-fan = twoMotorsControl.TwoMotorsControl(20)
-openHatch = twoMotorsControl.TwoMotorsControl(20)
-closeHatch = twoMotorsControl.TwoMotorsControl(30)
+fan = TwoMotorsControl(20)
+openHatch = TwoMotorsControl(20)
+closeHatch = TwoMotorsControl(30)
 
 counter = 0
 aggAirTemperature = 0
 aggAirHumidity = 0
 aggWoodTemperature = 0
 aggWoodHumidity = 0
+
+stopThread = False
 
 def startDrying(dryingTarget):
     global counter
@@ -25,13 +27,22 @@ def startDrying(dryingTarget):
     woodTemperature = stemmaSensor.measureTemperature()
     woodHumidity = stemmaSensor.measureHumidity()
     
+    if stopThread == True:
+        print("Przerwano automatyczny proces suszenia.")
+        emptyCounters()
+        radiatorControl.stopRadiator()
+        fan.stopTheFan()
+        openHatch.closeHatch()
+        return
     if woodHumidity > dryingTarget:
         counter += 1
-        print("Temperatura powietrza: " + str(airTemperature) + "°C")
-        print("Wilgotność powietrza: " + str(airHumidity) + "%")
         
-        print("Temperatura drewna: " + str(woodTemperature) + "°C")
         print("Wilgotność drewna: " + str(round(woodHumidity, 2)) + "%")
+        print("Temperatura drewna: " + str(woodTemperature) + "°C")
+        
+        print("Wilgotność powietrza: " + str(airHumidity) + "%")
+        print("Temperatura powietrza: " + str(airTemperature) + "°C")
+        
         print("-----------------------------------------")
         
         aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTemperature, counter)
@@ -53,9 +64,11 @@ def startDrying(dryingTarget):
         print("aggWoodTemperature: " + str(aggWoodTemperature))
         print("aggAirHumidity: " + str(aggAirHumidity))
         print("aggAirTemperature: " + str(aggAirTemperature))
+        print("--------------------------")
+        
         if counter == 10:
-            counter = 0
-
+            emptyCounters()
+            
         startDrying(dryingTarget)
     elif woodHumidity <= dryingTarget:
         print("Osiągnięto cel suszenia: " + str(dryingTarget) + "\n Koniec programu.")
@@ -98,7 +111,7 @@ def aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTempe
     else:
         aggAirTemperature += airTemperature
         
-    print("counter: " + str(counter))
+    print("Licznik: " + str(counter))
     
     if counter == 10:
         current_datetime = datetime.now()
@@ -116,11 +129,13 @@ def aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTempe
         
         kilnAWSConnector.publishWoodData(data)
     
-        counter = 0
-        aggAirTemperature = 0
-        aggAirHumidity = 0
-        aggWoodTemperature = 0
-        aggWoodHumidity = 0
+def emptyCounters():
+    global aggWoodHumidity, aggWoodTemperature, aggAirHumidity, aggAirTemperature, counter
+    counter = 0
+    aggAirTemperature = 0
+    aggAirHumidity = 0
+    aggWoodTemperature = 0
+    aggWoodHumidity = 0
 
 def startWarming():
     while True:

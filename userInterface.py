@@ -11,7 +11,6 @@ import threading
 
 twoMotorsControl.TwoMotorsControl.closeAllRelays()
 
-
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Zatrzymaj wiatrak')],
@@ -44,7 +43,7 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
           [sg.Push(), sg.Button('Zakończ')]]
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
-    
+window.refresh()
 while True:
     event, values = window.Read()
     window.refresh()
@@ -75,15 +74,18 @@ while True:
         if not woodHumidity.isdigit or float(woodHumidity) < 8 or float(woodHumidity) > 40:
             sg.popup("Dozwolone tylko liczby z zakresu 8 ÷ 40")
         else:
+            if dryingAlgorithm.stopThread == True:
+                dryingAlgorithm.stopThread = False
             window['Start'].update(disabled=True)
-            drying_thread = threading.Event()
-            threading.Thread(target=dryingAlgorithm.startDrying, args=(float(values['woodHumidityValue']),), daemon=True)
+            drying_thread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(values['woodHumidityValue']),), daemon=True)
+            eventThread = threading.Event()
             drying_thread.start()
             print("Trwa automatyczny proces suszenia drewna.")
             window['Start'].update(disabled=False)
     if event == 'Stop':
-        drying_thread.set()
-        print("Zatrzymano automatyczny proces suszenia drewna.")
+        window['Stop'].update(disabled=True)
+        dryingAlgorithm.stopThread = True
+        window['Stop'].update(disabled=False)
     if event in (None, 'Exit'):
         print("Event: None, exit")
         twoMotorsControl.TwoMotorsControl.closeAllRelays()
