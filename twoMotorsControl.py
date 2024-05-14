@@ -31,6 +31,8 @@ GPIO.setup(power_on_fan, GPIO.OUT)
 GPIO.setup(LEFT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(RIGHT_LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+fanValue = 0
+
 class TwoMotorsControl:
     try:
         if GPIO.getmode() is None:
@@ -73,18 +75,22 @@ class TwoMotorsControl:
             TwoMotorsControl.closeAllRelays()
 
     def startTheFan(self):
+        global fanValue
         try:
             motors.ChangeDutyCycle(5)
             GPIO.output(power_on_dc_motors, False)
             GPIO.output(power_on_fan, False)
+            fanValue = 5
         except Exception as e:
             print("Wystąpił błąd podczas uruchamiania wiatraka: ", e)
             
     def stopTheFan(self):
+        global fanValue
         try:
             motors.ChangeDutyCycle(self.pwm)
             GPIO.output(power_on_dc_motors, True)
             GPIO.output(power_on_fan, True)
+            fanValue = 0
         except Exception as e:
             print("Wystąpił błąd podczas zatrzymywania wiatraka: ", e)
 
