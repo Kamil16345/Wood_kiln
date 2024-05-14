@@ -7,8 +7,10 @@ import stemmaSensor
 import DHT11Sensor
 import limitSwitch
 import dryingAlgorithm
+import threading
 
 twoMotorsControl.TwoMotorsControl.closeAllRelays()
+
 
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
@@ -30,7 +32,7 @@ middleColumn = [[sg.Text("------------------------------------------------------
 
 rightColumn = [[sg.Text('Docelowa wilgotność: 8 ÷ 40%')],
                [sg.Input('', enable_events=True, key='woodHumidityValue', font=('Arial Bold', 10), expand_x=True, justification='left')],
-               [sg.Button('Start')]]
+               [sg.Button('Start'), sg.Button('Stop')]]
 
 layout = [[sg.Column(header, vertical_alignment='center', justification='center', k='-H-')],
           [sg.Text("Tryb ręczny:", pad=((7, 0), None), background_color='#ede264', text_color='black'),
@@ -74,9 +76,14 @@ while True:
             sg.popup("Dozwolone tylko liczby z zakresu 8 ÷ 40")
         else:
             window['Start'].update(disabled=True)
-            dryingAlgorithm.startDrying(float(values['woodHumidityValue']))
+            drying_thread = threading.Event()
+            threading.Thread(target=dryingAlgorithm.startDrying, args=(float(values['woodHumidityValue']),), daemon=True)
+            drying_thread.start()
             print("Trwa automatyczny proces suszenia drewna.")
-            
+            window['Start'].update(disabled=False)
+    if event == 'Stop':
+        drying_thread.set()
+        print("Zatrzymano automatyczny proces suszenia drewna.")
     if event in (None, 'Exit'):
         print("Event: None, exit")
         twoMotorsControl.TwoMotorsControl.closeAllRelays()
