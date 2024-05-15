@@ -26,8 +26,8 @@ middleColumn = [[sg.Text("------------------------------------------------------
                 [sg.Text("Temperatura powietrza w suszarni: " + str(DHT11Sensor.getMockupTemperature()) + "°C", k='airTemperature')],
                 [sg.Text("Wywietrznik dachowy: " + limitSwitch.getHatchState(), k='hatchState')],
                 [sg.Text("Wiatrak: " + "Wyłączony" if twoMotorsControl.fanValue == 0 else "Włączony", k='fanState')],
-                [sg.Text("Grzałki: " + "Wyłączone" if radiatorControl.radiatorValue == 0 else "Włączone", k='fanState')],
-                [sg.Text("Drzwi: " + "Zamknięte" if GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW else "Otwarte", k='doorState')]]
+                [sg.Text("Grzałki: " + "Wyłączone" if radiatorControl.radiatorValue == 0 else "Włączone", k='radiatorState')],
+                [sg.Text("Drzwi: " + "Zamknięte" if GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW else "Drzwi: Otwarte", k='doorState')]]
 
 rightColumn = [[sg.Text('Docelowa wilgotność: 8 ÷ 40%')],
                [sg.Input('', enable_events=True, key='woodHumidityValue', font=('Arial Bold', 10), expand_x=True, justification='left')],
@@ -43,7 +43,40 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
           [sg.Push(), sg.Button('Zakończ')]]
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
+
+
+event, values = window.Read()
 window.refresh()
+
+def keepRefresh():
+    while True:
+        if dryingAlgorithm.stopThread:
+            print("Drying thread nie działa...")
+            woodHum = str(round(dryingAlgorithm.woodHumidity, 2))
+            woodTemp = str(round(dryingAlgorithm.woodTemperature, 2))
+            airHum = str(round(dryingAlgorithm.airHumidity, 2))
+            airTemp = str(round(dryingAlgorithm.airTemperature, 2))
+        else:
+            print("Drying thread działa...")
+            woodHum = str(round(stemmaSensor.measureHumidity(), 2))
+            woodTemp = str(round(stemmaSensor.measureTemperature(), 2))
+            airHum = str(round(DHT11Sensor.getMockupHumidity(), 2))
+            airTemp = str(round(DHT11Sensor.getMockupTemperature(), 2))
+
+        print("Refresh thread działa...")
+        window['woodHumidity'].update(value = "Wilgotność drewna: " + woodHum + "%")
+        window['woodTemperature'].update(value = "Temperatura drewna: " + woodTemp + "°C")
+        window['airHumidity'].update(value = "Wilgotność powietrza w suszarni: " + airHum + "%")
+        window['airTemperature'].update(value = "Temperatura powietrza w suszarni: " + airTemp + "°C")
+        window['hatchState'].update(value = "Wywietrznik dachowy: " + limitSwitch.getHatchState())
+        window['fanState'].update(value = "Wiatrak: " + "Wyłączony" if twoMotorsControl.fanValue == 0 else "Wiatrak: Włączony")
+        window['radiatorState'].update(value = "Grzałki: " + "Wyłączone" if radiatorControl.radiatorValue == 0 else "Grzałki: Włączone")
+        window['doorState'].update(value = "Drzwi: " + "Zamknięte" if GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW else "Drzwi: Otwarte")
+        time.sleep(2)
+    
+refreshThread = threading.Thread(target=keepRefresh, daemon=True)
+refreshThread.start()
+
 while True:
     event, values = window.Read()
     window.refresh()
@@ -56,8 +89,11 @@ while True:
         fan.stopTheFan()
         print("Zatrzymano wiatrak")
     if event == 'Włącz grzałkę':
-        print("Włączono grzałkę")
-        radiatorControl.runRadiator()
+        # if GPIO.input(radiatorControl.door_limit_switch) == GPIO.HIGH:
+        #     sg.popup("Drzwi są otwarte. Zamknij drzwi!")
+        # elif GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW:
+            radiatorControl.runRadiator()
+            print("Włączono grzałkę")
     if event == 'Wyłącz grzałkę':
         print("Wyłączono grzałkę")
         radiatorControl.stopRadiator()
@@ -77,9 +113,8 @@ while True:
             if dryingAlgorithm.stopThread == True:
                 dryingAlgorithm.stopThread = False
             window['Start'].update(disabled=True)
-            drying_thread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(values['woodHumidityValue']),), daemon=True)
-            eventThread = threading.Event()
-            drying_thread.start()
+            dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(values['woodHumidityValue']),), daemon=True)
+            dryingThread.start()
             print("Trwa automatyczny proces suszenia drewna.")
             window['Start'].update(disabled=False)
     if event == 'Stop':
@@ -88,13 +123,12 @@ while True:
         window['Stop'].update(disabled=False)
     if event in (None, 'Exit'):
         print("Event: None, exit")
-        twoMotorsControl.TwoMotorsControl.closeAllRelays()
+        dryingAlgorithm.resetWholeKiln()
         GPIO.cleanup()
         break
     if event == sg.WIN_CLOSED or event == 'Zakończ':
         print("Zakończ")
-        twoMotorsControl.TwoMotorsControl.closeAllRelays()
+        dryingAlgorithm.resetWholeKiln()
         GPIO.cleanup()
         window.close()
     time.sleep(.5)
-    

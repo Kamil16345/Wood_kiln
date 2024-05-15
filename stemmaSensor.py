@@ -5,14 +5,15 @@ import sys
 from adafruit_seesaw.seesaw import Seesaw
 
 i2c_bus=busio.I2C(SCL, SDA)
-
 ss = Seesaw(i2c_bus, addr=0x36)
 
 counter = 0
 humidityAccumulated=0
+
+
 def measureHumidity():
-    wood_humidity = ss.moisture_read()
-    convertedWoodHumidity = (wood_humidity*40)/1015
+    woodHumidity = ss.moisture_read()
+    convertedWoodHumidity = (woodHumidity*40)/1015
     # print("Wilgotnosc_drewna: " + str(touch))
     return convertedWoodHumidity
     

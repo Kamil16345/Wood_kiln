@@ -12,27 +12,30 @@ openHatch = TwoMotorsControl(20)
 closeHatch = TwoMotorsControl(30)
 
 counter = 0
-aggAirTemperature = 0
-aggAirHumidity = 0
-aggWoodTemperature = 0
+
+woodHumidity = 0
+woodTemperature = 0
+airHumidity = 0
+airTemperature = 0
+
 aggWoodHumidity = 0
+aggWoodTemperature = 0
+aggAirHumidity = 0
+aggAirTemperature = 0
 
 stopThread = False
 
 def startDrying(dryingTarget):
-    global counter
-    airTemperature = DHT11Sensor.getMockupTemperature()
-    airHumidity = DHT11Sensor.getMockupHumidity()
-    
-    woodTemperature = stemmaSensor.measureTemperature()
+    global counter, woodHumidity, woodTemperature, airHumidity, airTemperature
     woodHumidity = stemmaSensor.measureHumidity()
+    woodTemperature = stemmaSensor.measureTemperature()
+    
+    airHumidity = DHT11Sensor.getMockupHumidity()
+    airTemperature = DHT11Sensor.getMockupTemperature()
     
     if stopThread == True:
         print("Przerwano automatyczny proces suszenia.")
-        emptyCounters()
-        radiatorControl.stopRadiator()
-        fan.stopTheFan()
-        openHatch.closeHatch()
+        resetWholeKiln()
         return
     if woodHumidity > dryingTarget:
         counter += 1
@@ -82,7 +85,6 @@ def checkAirHumidity(airHumidity):
         fan.startTheFan()
     elif airHumidity is not None and airHumidity < 50:
         print("Wilgotność powietrza < 50%. Wywietrznik zamknięty.")
-        # radiatorControl.runRadiator()
         openHatch.closeHatch()
         fan.stopTheFan()
     elif airHumidity == None or airHumidity > 100:
@@ -136,6 +138,13 @@ def emptyCounters():
     aggAirHumidity = 0
     aggWoodTemperature = 0
     aggWoodHumidity = 0
+    
+def resetWholeKiln():
+    emptyCounters()
+    radiatorControl.stopRadiator()
+    fan.stopTheFan()
+    openHatch.closeHatch()
+    TwoMotorsControl.closeAllRelays()
 
 def startWarming():
     while True:
