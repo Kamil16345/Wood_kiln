@@ -14,7 +14,7 @@ radiator.start(0)
 GPIO.output(24, 1)
 GPIO.output(25, 0)
 
-door_limit_switch = 5
+door_limit_switch = 11
 GPIO.setup(door_limit_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 radiatorValue = 0
 

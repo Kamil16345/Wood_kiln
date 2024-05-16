@@ -63,11 +63,11 @@ def startDrying(dryingTarget):
         elif woodTemperature == None or woodTemperature > 100:
             print("Błąd podczas odczytu temperatury drewna. Kontynuowanie algorytmu suszenia.")
     
-        print("aggWoodHumidity: " + str(aggWoodHumidity))
-        print("aggWoodTemperature: " + str(aggWoodTemperature))
-        print("aggAirHumidity: " + str(aggAirHumidity))
-        print("aggAirTemperature: " + str(aggAirTemperature))
-        print("--------------------------")
+        # print("aggWoodHumidity: " + str(aggWoodHumidity))
+        # print("aggWoodTemperature: " + str(aggWoodTemperature))
+        # print("aggAirHumidity: " + str(aggAirHumidity))
+        # print("aggAirTemperature: " + str(aggAirTemperature))
+        # print("--------------------------")
         
         if counter == 10:
             emptyCounters()
