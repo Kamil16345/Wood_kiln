@@ -46,7 +46,6 @@ layout = [[sg.Column(header, vertical_alignment='center', justification='center'
 
 window = sg.Window('Suszarnia', layout, size=(700,400))
 
-
 event, values = window.Read()
 window.refresh()
 
@@ -137,17 +136,14 @@ while True:
         enableButtons(['Uruchom wiatrak', 'Włącz grzałki', 'Otwórz wywietrznik', 'Zamknij wywietrznik', 'Start'])
         dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Otwórz wywietrznik':
-        dryingAlgorithm.stopThread = True
+
         hatch = twoMotorsControl.TwoMotorsControl(20)
         hatch.openHatch()
         print("Otwarto wywietrznik.")
-        dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Zamknij wywietrznik':
-        dryingAlgorithm.stopThread = True
         hatch = twoMotorsControl.TwoMotorsControl(35)
         hatch.closeHatch()
         print("Zamknięto wywietrznik.")
-        dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Start':
         woodHumidity = values['woodHumidityValue']
         if not woodHumidity.isdigit or float(woodHumidity) < 8 or float(woodHumidity) > 40:

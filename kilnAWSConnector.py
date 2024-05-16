@@ -4,8 +4,6 @@ import ssl
 import json
 import _thread
 from datetime import datetime
-import stemmaSensor
-import DHT11Sensor
 
 def on_connect(self, client, userdata, flags, rc):
     print("Połączono z AWS IoT: " + str(rc))
