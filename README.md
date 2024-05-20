@@ -30,4 +30,5 @@ Additionally, I decided to connect this project with AWS services to accumulate 
 * QuickSight
 
 ### Live demo:  
+![wood dryier mock-up](https://img.youtube.com/vi/watch?v=RiVlgQARXeY&t=23s/0.jpg)](https://www.youtube.com/watch?v=RiVlgQARXeY&t=23s)
 https://www.youtube.com/watch?v=RiVlgQARXeY
