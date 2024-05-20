@@ -12,6 +12,7 @@ The wood industry is a substantial part of the overall manufacturing sector. How
 ![image](https://github.com/Kamil16345/Wood_kiln/assets/75177619/404c728a-71b9-4907-afe2-ba00ea979918)
 
 Then it turned into this: 
+![zdjęcie_makiety](https://github.com/Kamil16345/Wood_kiln/assets/75177619/3e9ad63a-833f-4b3e-97b4-4b1cc2bb0b71)
 
 I designed a physical mock-up of a dryer, mounted electrical components, connected them to Raspberry Pi which is heart of this project  
 and started collecting data from the periphery.  
@@ -30,5 +31,5 @@ Additionally, I decided to connect this project with AWS services to accumulate 
 * QuickSight
 
 ### Live demo:  
-![wood dryier mock-up](https://img.youtube.com/vi/watch?v=RiVlgQARXeY&t=23s/0.jpg)](https://www.youtube.com/watch?v=RiVlgQARXeY&t=23s)
+![zdjęcie_makiety]([https://img.youtube.com/vi/watch?v=RiVlgQARXeY&t=23s/0.jpg](https://github.com/Kamil16345/Wood_kiln/assets/75177619/3e9ad63a-833f-4b3e-97b4-4b1cc2bb0b71))](https://www.youtube.com/watch?v=RiVlgQARXeY&t=23s)
 https://www.youtube.com/watch?v=RiVlgQARXeY
