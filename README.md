@@ -31,5 +31,4 @@ Additionally, I decided to connect this project with AWS services to accumulate 
 * QuickSight
 
 ### Live demo:  
-![zdjęcie_makiety]([https://img.youtube.com/vi/watch?v=RiVlgQARXeY&t=23s/0.jpg](https://github.com/Kamil16345/Wood_kiln/assets/75177619/3e9ad63a-833f-4b3e-97b4-4b1cc2bb0b71))](https://www.youtube.com/watch?v=RiVlgQARXeY&t=23s)  
 https://www.youtube.com/watch?v=RiVlgQARXeY
