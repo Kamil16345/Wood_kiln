@@ -38,7 +38,7 @@ rightColumn = [[sg.Text('Docelowa wilgotność: 8 ÷ 40%')],
 layout = [[sg.Column(header, vertical_alignment='center', justification='center', k='-H-')],
           [sg.Text("Tryb ręczny:", pad=((7, 0), None), background_color='#ede264', text_color='black'),
            sg.Text("Aktualne parametry:", pad=((195, 0), None), background_color='#ede264', text_color='black'),
-           sg.Text("Tryb automatyczny:", pad=((80, 0), None), background_color='#ede264', text_color='black')],
+           sg.Text("Tryb automatyczny:", pad=((93, 0), None), background_color='#ede264', text_color='black')],
           [sg.Column(leftColumn, vertical_alignment='top', pad=(None, None), k='-L-'),
            sg.Column(middleColumn, vertical_alignment='top', pad=((40, 0), None), k='-M-'),
            sg.Column(rightColumn, vertical_alignment='top', pad=((20, 0), None), k='-R-')],
@@ -121,7 +121,7 @@ while True:
         dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Włącz grzałki':
         if GPIO.input(radiatorControl.door_limit_switch) == GPIO.HIGH:
-            sg.popup("Drzwi są otwarte. Zamknij drzwi!")
+            sg.popup("Drzwi są otwarte. Zamknij drzwi! \nGrzałki nie zostały uruchomione.")
         elif GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW:
             dryingAlgorithm.stopThread == True
             radiatorControl.runRadiator()
@@ -147,7 +147,7 @@ while True:
     if event == 'Start':
         woodHumidity = values['woodHumidityValue']
         if not woodHumidity.isdigit or float(woodHumidity) < 8 or float(woodHumidity) > 40:
-            sg.popup("Dozwolone tylko liczby z zakresu 8 ÷ 40")
+            sg.popup("Błędna wartość! \nDozwolone tylko liczby z zakresu 8 ÷ 40")
         else:
             if dryingAlgorithm.stopThread == True:
                 dryingAlgorithm.stopThread = False
