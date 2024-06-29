@@ -11,7 +11,7 @@ The wood industry is a substantial part of the overall manufacturing sector. How
 ## It has all started with a project in Inventor  
 ![image](https://github.com/Kamil16345/Wood_kiln/assets/75177619/404c728a-71b9-4907-afe2-ba00ea979918)
 
-Then it turned into this: 🔥  
+## Then it turned into this: 🔥  
 ![zdjęcie_makiety](https://github.com/Kamil16345/Wood_kiln/assets/75177619/3e9ad63a-833f-4b3e-97b4-4b1cc2bb0b71)
 
 I designed a physical mock-up of a dryer, mounted electrical components, connected them to Raspberry Pi which is heart of this project  
