@@ -22,7 +22,6 @@ right_rotate_dc_motor=18
 power_on_dc_motors=19
 power_on_fan=13
 
-GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(right_rotate_dc_motor, GPIO.OUT)
 GPIO.setup(left_rotate_dc_motor, GPIO.OUT)
@@ -49,7 +48,7 @@ class TwoMotorsControl:
         GPIO.output(right_rotate_dc_motor, True)
         GPIO.output(power_on_dc_motors, True)
         GPIO.output(power_on_fan, True)
-                    
+
     def openHatch(self):
         try:
             motors.ChangeDutyCycle(self.pwm)

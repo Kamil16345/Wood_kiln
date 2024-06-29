@@ -3,16 +3,17 @@ import RPi.GPIO as GPIO
 import time
 import radiatorControl
 import twoMotorsControl
+from twoMotorsControl import TwoMotorsControl
 import stemmaSensor
 import DHT11Sensor
 import limitSwitch
 import dryingAlgorithm
 import threading
 
-twoMotorsControl.TwoMotorsControl.closeAllRelays()
+TwoMotorsControl.closeAllRelays()
 
 GPIO.setmode(GPIO.BCM)
-
+names = ['Brzoza']
 header = [[sg.Text('Zarządzanie suszarnią')]]
 leftColumn = [[sg.Button('Uruchom wiatrak')],
           [sg.Button('Zatrzymaj wiatrak')],
@@ -31,7 +32,9 @@ middleColumn = [[sg.Text("------------------------------------------------------
                 [sg.Text("Grzałki: " + "Wyłączone" if radiatorControl.radiatorValue == 0 else "Włączone", k='radiatorState')],
                 [sg.Text("Drzwi: " + "Zamknięte" if GPIO.input(radiatorControl.door_limit_switch) == GPIO.LOW else "Drzwi: Otwarte", k='doorState')]]
 
-rightColumn = [[sg.Text('Docelowa wilgotność: 8 ÷ 40%')],
+rightColumn = [[sg.Text("Rodzaj drewna: ", k='woodGenreLabel')],
+               [sg.Combo(names, expand_x=True, enable_events=True,  readonly=False, key='genre')],
+               [sg.Text('Docelowa wilgotność: 8 ÷ 40%')],
                [sg.Input('', enable_events=True, key='woodHumidityValue', font=('Arial Bold', 10), expand_x=True, justification='left')],
                [sg.Button('Start'), sg.Button('Stop')]]
 
@@ -105,7 +108,7 @@ while True:
     
     if event == 'Uruchom wiatrak':
         dryingAlgorithm.stopThread == True
-        fan = twoMotorsControl.TwoMotorsControl(4)
+        fan = TwoMotorsControl(4)
         fan.startTheFan()
         print("Uruchomiono wiatrak.")
         enableButtons(['Zatrzymaj wiatrak'])
@@ -113,7 +116,7 @@ while True:
         dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Zatrzymaj wiatrak':
         dryingAlgorithm.stopThread == True
-        fan = twoMotorsControl.TwoMotorsControl(0)
+        fan = TwoMotorsControl(0)
         fan.stopTheFan()
         print("Zatrzymano wiatrak.")
         disableButtons(['Zatrzymaj wiatrak', 'Wyłącz grzałki', 'Stop'])
@@ -137,11 +140,11 @@ while True:
         dryingThread = threading.Thread(target=dryingAlgorithm.startDrying, args=(float(9),), daemon=True)
     if event == 'Otwórz wywietrznik':
 
-        hatch = twoMotorsControl.TwoMotorsControl(20)
+        hatch = TwoMotorsControl(20)
         hatch.openHatch()
         print("Otwarto wywietrznik.")
     if event == 'Zamknij wywietrznik':
-        hatch = twoMotorsControl.TwoMotorsControl(35)
+        hatch = TwoMotorsControl(35)
         hatch.closeHatch()
         print("Zamknięto wywietrznik.")
     if event == 'Start':
