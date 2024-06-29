@@ -78,7 +78,7 @@ def checkAirHumidity(airHumidity):
         radiatorControl.stopRadiator()
         openHatch.openHatch()
         fan.startTheFan()
-    elif airHumidity is not None and airHumidity < 50:
+    elif airHumidity is not None and airHumidity < 40:
         print("Wilgotność powietrza < 50%. Wywietrznik zamknięty.")
         openHatch.closeHatch()
         fan.stopTheFan()
