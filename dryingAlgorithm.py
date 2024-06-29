@@ -1,4 +1,5 @@
 from twoMotorsControl import TwoMotorsControl
+from twoMotorsControl import fanValue
 import radiatorControl
 import sys
 import DHT11Sensor
@@ -22,11 +23,12 @@ aggWoodHumidity = 0
 aggWoodTemperature = 0
 aggAirHumidity = 0
 aggAirTemperature = 0
-
+radiatorSwitch = radiatorControl.radiatorValue
+fanSwitch = fanValue
 stopThread = False
 
 def startDrying(dryingTarget):
-    global counter, woodHumidity, woodTemperature, airHumidity, airTemperature
+    global counter, woodHumidity, woodTemperature, airHumidity, airTemperature, radiatorSwitch, fanSwitch
     woodHumidity = stemmaSensor.measureHumidity()
     woodTemperature = stemmaSensor.measureTemperature()
     
@@ -49,25 +51,18 @@ def startDrying(dryingTarget):
         print("-----------------------------------------")
         
         aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTemperature, counter)
-            
         if woodTemperature is not None and woodTemperature >= 35:
             print("Temperatura drewna >= 35 °C. Grzałki wyłączone.")
             radiatorControl.stopRadiator()
             checkAirHumidity(airHumidity)
             print("-----------------")
-        elif woodTemperature is not None and woodTemperature < 34:
+        elif woodTemperature is not None and woodTemperature < 33:
             print("Temperatura drewna < 34 °C. Grzałki włączone.")
             radiatorControl.runRadiator()
             checkAirHumidity(airHumidity)
             print("-----------------")
         elif woodTemperature == None or woodTemperature > 100:
             print("Błąd podczas odczytu temperatury drewna. Kontynuowanie algorytmu suszenia.")
-    
-        # print("aggWoodHumidity: " + str(aggWoodHumidity))
-        # print("aggWoodTemperature: " + str(aggWoodTemperature))
-        # print("aggAirHumidity: " + str(aggAirHumidity))
-        # print("aggAirTemperature: " + str(aggAirTemperature))
-        # print("--------------------------")
         
         if counter == 10:
             emptyCounters()
@@ -91,7 +86,7 @@ def checkAirHumidity(airHumidity):
         print("Błąd podczas odczytu wilgotności powietrza. Kontynuowanie algorytmu suszenia.")
         
 def aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTemperature, counter):
-    global aggWoodHumidity, aggWoodTemperature, aggAirHumidity, aggAirTemperature
+    global aggWoodHumidity, aggWoodTemperature, aggAirHumidity, aggAirTemperature, radiatorSwitch, fanSwitch
     
     if woodHumidity == None:
         aggWoodHumidity +=  aggWoodHumidity/counter
@@ -126,6 +121,8 @@ def aggregateAndPublishData(woodHumidity, woodTemperature, airHumidity, airTempe
             "woodTemperature": round(aggWoodTemperature/counter, 2),
             "airHumidity": round(aggAirHumidity/counter, 2),
             "airTemperature": round(aggAirTemperature/counter, 2),
+            "radiatorSwitch": 0 if radiatorControl.radiatorValue == 0 else 1,
+            "fanSwitch": 0 if fanSwitch == 0 else 1,
             "timestamp": timestamp
         }
         
@@ -157,7 +154,7 @@ def startWarming():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "startDrying":
-        startDrying(1)    
+        startDrying(1)
     if len(sys.argv) > 1 and sys.argv[1] == "startWarming":
         startWarming()
         

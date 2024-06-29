@@ -24,11 +24,12 @@ def runRadiator():
         if GPIO.input(door_limit_switch) == GPIO.LOW:
             radiator.ChangeDutyCycle(100)
             radiatorValue = 100
+            print("radiatorValue: " + str(radiatorValue))
             print("Drzwi zamknięte, grzałki włączone.")
         if GPIO.input(door_limit_switch) == GPIO.HIGH:
             print("Drzwi są otwarte. Zamknij drzwi!")
-            radiator.ChangeDutyCycle(0)
-            radiatorValue = 0
+            stopRadiator()
+            print("radiatorValue: " + str(radiatorValue))
     except Exception as e:
         print("Wystąpił błąd w metodzie radiatorControl.runRatiator(): ", e)
         
